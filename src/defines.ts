@@ -1,4 +1,10 @@
 export enum EButtons {
+    UP,
+    RIGHT,
+    DOWN,
+    LEFT,
     A,
-    B
+    B,
+    SELECT,
+    START
 }

@@ -10,6 +10,8 @@
 
     <input type="button" id="input" @click="play" value="PLAY">
 
+    <!-- <input type="button" id="input" @click="start" value="START"> -->
+
     <!-- CONTROLS -->
     <Buttons v-on:buttonClicked="handleButtonClicked"></Buttons>
 </template>
@@ -117,34 +119,20 @@
     //     }
     // }
 
-    function control() {
-        const newState = {
-            UP: false,
-            RIGHT: false,
-            DOWN: false,
-            LEFT: false,
-            A: false,
-            B: false,
-            SELECT: false,
-            START: false,
-        }
-        WasmBoy.setJoypadState(newState);
-    }
-
     // default config
     // const WasmBoyOptions = {
     //     headless: false,
     //     useGbcWhenOptional: true,
-    //         isAudioEnabled: true,
-    //         frameSkip: 1,
-    //         audioBatchProcessing: true,
-    //         timersBatchProcessing: false,
-    //         audioAccumulateSamples: true,
-    //         graphicsBatchProcessing: false,
-    //         graphicsDisableScanlineRendering: false,
-    //         tileRendering: true,
-    //         tileCaching: true,
-    //         gameboyFPSCap: 60,
+    //     isAudioEnabled: true,
+    //     frameSkip: 1,
+    //     audioBatchProcessing: true,
+    //     timersBatchProcessing: false,
+    //     audioAccumulateSamples: true,
+    //     graphicsBatchProcessing: false,
+    //     graphicsDisableScanlineRendering: false,
+    //     tileRendering: true,
+    //     tileCaching: true,
+    //     gameboyFPSCap: 60,
     //     updateGraphicsCallback: false,
     //     updateAudioCallback: false,
     //     saveStateCallback: false,
@@ -158,69 +146,69 @@
     const WasmBoyOptions = {
         headless: true,
         useGbcWhenOptional: true,
-            isAudioEnabled: true,
-            frameSkip: 1,
-            audioBatchProcessing: true,
-            timersBatchProcessing: false,
-            audioAccumulateSamples: true,
-            graphicsBatchProcessing: false,
-            graphicsDisableScanlineRendering: false,
-            tileRendering: true,
-            tileCaching: true,
-            gameboyFPSCap: 60,
-        updateGraphicsCallback: false,
-        updateAudioCallback: false,
-        saveStateCallback: false,
-        onReady: false,
-        onPlay: false,
-        onPause: false,
-        onLoadedAndStarted: false
-    }
+        isAudioEnabled: true,
+        frameSkip: 1,
+        audioBatchProcessing: true,
+        timersBatchProcessing: false,
+        audioAccumulateSamples: true,
+        graphicsBatchProcessing: false,
+        graphicsDisableScanlineRendering: false,
+        tileRendering: true,
+        tileCaching: true,
+        gameboyFPSCap: 60,
+        updateGraphicsCallback: (imageDataArray: any) => {
+            console.log("update graphics callback");
 
-    // const WasmBoyOptions = {
-    //     headless: true,
-    //     useGbcWhenOptional: true,
-    //         isAudioEnabled: true,
-    //         frameSkip: 1,
-    //         audioBatchProcessing: true,
-    //         timersBatchProcessing: false,
-    //         audioAccumulateSamples: true,
-    //         graphicsBatchProcessing: false,
-    //         graphicsDisableScanlineRendering: false,
-    //         tileRendering: true,
-    //         tileCaching: true,
-    //         gameboyFPSCap: 60,
-    //     updateGraphicsCallback: true,
-    //     updateAudioCallback: true,
-    //     saveStateCallback: true
-    // }
+            canvasImageData.data.set(imageDataArray);
 
-    const wasmBoyConfig = {
-        WasmBoyOptions,
+            canvasContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            canvasContext.putImageData(canvasImageData, 0, 0);
+        },
+        onReady: () => {
+            console.log("on ready");
+        },
         onPlay: () => {
             console.log("on play");
         },
         onPause: () => {
             console.log("on pause");
-        },
-        onReady: () => {
-            console.log("on pause");
-        },
-        saveStateCallback: (saveStateObject: any) => {
-            console.log("save state callback");
+        }
+        // updateGraphicsCallback: false,
+        // updateAudioCallback: false,
+        // saveStateCallback: false,
+        // onReady: false,
+        // onPlay: false,
+        // onPause: false,
+        // onLoadedAndStarted: false
+    }
+
+    const wasmBoyConfig = {
+        WasmBoyOptions,
+        updateGraphicsCallback: (imageDataArray: any) => {
+
+            console.log("update graphics callback");
         },
         updateAudioCallback: (audioContext: any, audioBufferSourceNode: any) => {
 
             console.log("update audio callback");
         },
-        updateGraphicsCallback: (imageDataArray: any) => {
-
-            console.log("update graphics callback");
+        saveStateCallback: (saveStateObject: any) => {
+            console.log("save state callback");
+        },
+        onReady: () => {
+            console.log("on pause");
+        },
+        onPlay: () => {
+            console.log("on play");
+        },
+        onPause: () => {
+            console.log("on pause");
         }
     };
 
-    // WasmBoy.config(WasmBoyOptions)
-    WasmBoy.config(WasmBoyOptions, canvasElement)
+    // WasmBoy.config(wasmBoyConfig)
+    WasmBoy.config(WasmBoyOptions)
+    // WasmBoy.config(WasmBoyOptions, canvasElement)
     .then(() => {
         console.log('WasmBoy is configured!');
         // You may now load games, or use other exported functions of the lib.
@@ -228,9 +216,21 @@
         console.error('Error Configuring WasmBoy...');
     });
 
-    function handleButtonClicked(buttonKey: EButtons) {
 
-        console.log(buttonKey);
+    function handleButtonClicked(buttonKey: EButtons) {
+        
+        const newState = {
+            UP: (buttonKey == EButtons.UP) ? true : false,
+            RIGHT: (buttonKey == EButtons.RIGHT) ? true : false,
+            DOWN: (buttonKey == EButtons.DOWN) ? true : false,
+            LEFT: (buttonKey == EButtons.LEFT) ? true : false,
+            A: (buttonKey == EButtons.A) ? true : false,
+            B: (buttonKey == EButtons.B) ? true : false,
+            SELECT: (buttonKey == EButtons.SELECT) ? true : false,
+            START: (buttonKey == EButtons.START) ? true : false,
+        }
+        
+        WasmBoy.setJoypadState(newState);
     }
 
     function loadROM(event: any) {
@@ -254,6 +254,8 @@
     }
 
     function play() {
+
+        WasmBoy.resumeAudioContext();
         WasmBoy.play().then(() => {
             console.log('WasmBoy is playing!');
             loop();
@@ -269,15 +271,15 @@
         // Draw a screenshot of the frame reached
         getImageDataFromFrame().then((imageDataArray: any) => {
 
-            console.log(imageDataArray);
+            // console.log(imageDataArray);
             // Add our new imageData
-            // canvasImageData.data.set(imageDataArray);
+            canvasImageData.data.set(imageDataArray);
 
             canvasContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
             canvasContext.putImageData(canvasImageData, 0, 0);
         })
 
-        setTimeout(loop, 100);
+        setTimeout(loop, (1000/30));
 
     }
 

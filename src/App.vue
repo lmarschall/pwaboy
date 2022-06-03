@@ -4,13 +4,11 @@
 </script>
 
 <template>
-  <div>
-    <div class="alert alert-warning text-center" role="alert">
-      This app is still in development stage!
-      Send feedback via <a href="mailto:mail@lmarschall.com">mail</a>.
-    </div>
-    <router-view />
+  <div class="alert alert-warning text-center" role="alert">
+    This app is still in development stage!
+    Send feedback via <a href="mailto:mail@lmarschall.com">mail</a>.
   </div>
+  <router-view />
 </template>
 
 <style>

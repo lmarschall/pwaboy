@@ -4,6 +4,12 @@
     <div class="container">
         <button @click="emit('buttonClicked', EButtons.A)">A</button>
         <button @click="emit('buttonClicked', EButtons.B)">B</button>
+        <button @click="emit('buttonClicked', EButtons.UP)">UP</button>
+        <button @click="emit('buttonClicked', EButtons.DOWN)">DOWN</button>
+        <button @click="emit('buttonClicked', EButtons.LEFT)">LEFT</button>
+        <button @click="emit('buttonClicked', EButtons.RIGHT)">RIGHT</button>
+        <button @click="emit('buttonClicked', EButtons.SELECT)">SELECT</button>
+        <button @click="emit('buttonClicked', EButtons.START)">START</button>
     </div>
     
     
