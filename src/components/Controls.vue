@@ -55,9 +55,9 @@
             zone: document.getElementById('zone_joystick'),
             mode: 'static',
             size: 100,
-            threshold: 0.01,
+            threshold: 0.5,
             color: 'red',
-            position: { left: '50%', top: '50%' }
+            position: { left: '50vw', bottom: '10vh' }
         });
 
         joystick.on('dir', (dir:any, data: any) => {

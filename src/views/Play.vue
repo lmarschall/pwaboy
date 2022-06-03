@@ -231,8 +231,8 @@
 
     function updateControlStates(controlKey: EControl, active: boolean) {
 
-        console.log(controlStates);
-        console.log(EControl[controlKey]);
+        // console.log(controlStates);
+        // console.log(EControl[controlKey]);
 
         controlStates[EControl[controlKey]] = active
         
