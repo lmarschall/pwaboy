@@ -13,7 +13,7 @@
     <!-- <input type="button" id="input" @click="start" value="START"> -->
 
     <!-- CONTROLS -->
-    <Buttons v-on:buttonClicked="handleButtonClicked"></Buttons>
+    <Controls v-on:updateControl="updateControlStates"></Controls>
 </template>
 
 <style scoped>
@@ -24,19 +24,31 @@
     import { onMounted, onUpdated, ref } from "vue";
     import { WasmBoy } from 'wasmboy'
 
-    import Buttons from "../components/Buttons.vue";
+    import Controls from "../components/Controls.vue";
 
-    import { EButtons } from "./../defines"
+    import { EControl } from "./../defines"
 
     // let canvasElement: any = document.getElementById("wasmboyCanvas");
     let canvasElement: any = undefined;
     let canvasContext: any = undefined;
     let canvasImageData: any = undefined;
     let doLoop = true;
+    let newControl = 0;
 
     // Define some constants
     const GAMEBOY_CAMERA_WIDTH = 160;
     const GAMEBOY_CAMERA_HEIGHT = 144;
+
+    const controlStates = {
+        UP: false,
+        RIGHT: false,
+        DOWN: false,
+        LEFT: false,
+        A: false,
+        B: false,
+        SELECT: false,
+        START: false
+    } as any
 
     function init() {
 
@@ -217,20 +229,14 @@
     });
 
 
-    function handleButtonClicked(buttonKey: EButtons) {
+    function updateControlStates(controlKey: EControl, active: boolean) {
+
+        console.log(controlStates);
+        console.log(EControl[controlKey]);
+
+        controlStates[EControl[controlKey]] = active
         
-        const newState = {
-            UP: (buttonKey == EButtons.UP) ? true : false,
-            RIGHT: (buttonKey == EButtons.RIGHT) ? true : false,
-            DOWN: (buttonKey == EButtons.DOWN) ? true : false,
-            LEFT: (buttonKey == EButtons.LEFT) ? true : false,
-            A: (buttonKey == EButtons.A) ? true : false,
-            B: (buttonKey == EButtons.B) ? true : false,
-            SELECT: (buttonKey == EButtons.SELECT) ? true : false,
-            START: (buttonKey == EButtons.START) ? true : false,
-        }
-        
-        WasmBoy.setJoypadState(newState);
+        WasmBoy.setJoypadState(controlStates);
     }
 
     function loadROM(event: any) {
@@ -265,6 +271,25 @@
     }
 
     function loop() {
+
+        // if(!newControl) {
+        //     // reset control states each loop
+        //     const newState = {
+        //         UP: false,
+        //         RIGHT: false,
+        //         DOWN: false,
+        //         LEFT: false,
+        //         A: false,
+        //         B: false,
+        //         SELECT: false,
+        //         START: false,
+        //     }
+            
+        //     WasmBoy.setJoypadState(newState);
+        // } else {
+        //     newControl =  newControl -1;
+        // }
+
 
         // WasmBoy.setCanvas(canvasElement);
         WasmBoy._runWasmExport('executeMultipleFrames', [1]);

@@ -1,4 +1,4 @@
-export enum EButtons {
+export enum EControl {
     UP,
     RIGHT,
     DOWN,
