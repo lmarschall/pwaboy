@@ -2,18 +2,25 @@
 
     <!-- WASMBOY CANVAS -->
     <div class="container">
-        <canvas id="wasmboyCanvas" width="200" height="100" style="border:1px solid #000000;">
+        <canvas id="wasmboyCanvas" width="200" height="100" style="border:1px solid #000000;" allow="autoplay">
         </canvas>
     </div>
 
+    <audio id="myAudio" 
+        controls loop
+        src="./../assets/sound.mp3" 
+        type="audio/mp3" hidden
+        >
+    </audio>
+
     <input type="file" id="inputROM" @change="loadROM" name="TEST">
 
-    <input type="button" id="input" @click="play" value="PLAY">
+    <input type="button" id="input" v-on:click="play" value="PLAY">
 
     <!-- <input type="button" id="input" @click="start" value="START"> -->
 
     <!-- CONTROLS -->
-    <Controls v-on:updateControl="updateControlStates"></Controls>
+    <Controls v-on:updateControl="updateControlStates" v-on:buttonClicked="handleButtonClicked"></Controls>
 </template>
 
 <style scoped>
@@ -26,7 +33,7 @@
 
     import Controls from "../components/Controls.vue";
 
-    import { EControl } from "./../defines"
+    import { EButton, EControl } from "./../defines"
 
     // let canvasElement: any = document.getElementById("wasmboyCanvas");
     let canvasElement: any = undefined;
@@ -38,6 +45,12 @@
     // Define some constants
     const GAMEBOY_CAMERA_WIDTH = 160;
     const GAMEBOY_CAMERA_HEIGHT = 144;
+
+    const WASMBOY_SAMPLE_RATE = 44100;
+    // These magic numbers just come from preference, can be set as options
+    const DEFAULT_AUDIO_LATENCY_IN_MILLI = 100;
+    // Some constants that use the ones above that will allow for faster performance
+    const DEFAULT_AUDIO_LATENCY_IN_SECONDS = DEFAULT_AUDIO_LATENCY_IN_MILLI / 1000;
 
     const controlStates = {
         UP: false,
@@ -168,7 +181,7 @@
         tileRendering: true,
         tileCaching: true,
         gameboyFPSCap: 60,
-        updateGraphicsCallback: (imageDataArray: any) => {
+        updateGraphicsCallback: async (imageDataArray: any) => {
             console.log("update graphics callback");
 
             canvasImageData.data.set(imageDataArray);
@@ -184,9 +197,18 @@
         },
         onPause: () => {
             console.log("on pause");
-        }
+        },
         // updateGraphicsCallback: false,
-        // updateAudioCallback: false,
+        updateAudioCallback: async (audio: any) => {
+            console.log("update audio callback");
+
+            console.log(audio);
+
+            // canvasImageData.data.set(imageDataArray);
+
+            // canvasContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            // canvasContext.putImageData(canvasImageData, 0, 0);
+        }
         // saveStateCallback: false,
         // onReady: false,
         // onPlay: false,
@@ -239,6 +261,25 @@
         WasmBoy.setJoypadState(controlStates);
     }
 
+    function handleButtonClicked(buttonKey: EButton) {
+
+        if(buttonKey == EButton.SAVE) {
+
+            WasmBoy.saveState();
+        }
+
+        if(buttonKey == EButton.LOAD) {
+
+            WasmBoy.getSaveStates().then((saveStates: any) => {
+                console.log(saveStates);
+
+                if(saveStates.length) {
+                    WasmBoy.loadState(saveStates.at(-1));
+                }
+            })
+        }
+    }
+
     function loadROM(event: any) {
         console.log(event.target.files[0])
 
@@ -262,50 +303,84 @@
     function play() {
 
         WasmBoy.resumeAudioContext();
+        var x = document.getElementById("myAudio") as any;
+        x.play();
         WasmBoy.play().then(() => {
             console.log('WasmBoy is playing!');
-            loop();
+            setInterval(loop, Math.floor(1000/60))
         }).catch(() => {
             console.error('WasmBoy had an error playing...');
         });
     }
 
+    const sampleAudio = async () => {
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        const numberOfSamples = await WasmBoy._runWasmExport('getNumberOfSamplesInAudioBuffer', [])
+        // console.log("number of samples");
+        // console.log(numberOfSamples)
+
+        const audioLocation = await WasmBoy._getWasmConstant('AUDIO_BUFFER_LOCATION');
+        // console.log(audioLocation);
+        // const audioInProgressMemory = await WasmBoy._getWasmMemorySection(
+        //     frameInProgressVideoOutputLocation,
+        //     frameInProgressVideoOutputLocation + GAMEBOY_CAMERA_HEIGHT * GAMEBOY_CAMERA_WIDTH * 3 + 1
+        // );
+
+        // AUDIO_BUFFER_LOCATION
+
+        await WasmBoy._runWasmExport('clearAudioBuffer', [])
+
+        const leftChannelBuffer = 0
+        const rightChannelBuffer = 0
+
+        // Get our buffers as floats
+        const leftChannelBufferAsFloat = new Float32Array(leftChannelBuffer);
+        const rightChannelBufferAsFloat = new Float32Array(rightChannelBuffer);
+
+        // Create an audio buffer, with a left and right channel
+        let audioBuffer = audioContext.createBuffer(2, numberOfSamples, WASMBOY_SAMPLE_RATE);
+        // this._setSamplesToAudioBuffer(this.audioBuffer, leftChannelBufferAsFloat, rightChannelBufferAsFloat);
+
+        // Get an AudioBufferSourceNode.
+        // This is the AudioNode to use when we want to play an AudioBuffer
+        let source = audioContext.createBufferSource();
+
+        // set the buffer in the AudioBufferSourceNode
+        source.buffer = audioBuffer;
+
+        // source.playbackRate.setValueAtTime(playbackRate, this.audioContext.currentTime);
+
+        let finalNode = source;
+
+        // connect the AudioBufferSourceNode to the
+        // destination so we can hear the sound
+        finalNode.connect(audioContext.destination);
+
+        let audioContextCurrentTime = audioContext.currentTime;
+        let audioContextCurrentTimeWithLatency = audioContextCurrentTime + DEFAULT_AUDIO_LATENCY_IN_SECONDS;
+        // let audioPlaytime = audioPlaytime || audioContextCurrentTimeWithLatency;
+        let audioPlaytime = audioContextCurrentTimeWithLatency;
+
+        // start the source playing
+        source.start(audioPlaytime);
+
+        
+    }
+
     function loop() {
 
-        // if(!newControl) {
-        //     // reset control states each loop
-        //     const newState = {
-        //         UP: false,
-        //         RIGHT: false,
-        //         DOWN: false,
-        //         LEFT: false,
-        //         A: false,
-        //         B: false,
-        //         SELECT: false,
-        //         START: false,
-        //     }
-            
-        //     WasmBoy.setJoypadState(newState);
-        // } else {
-        //     newControl =  newControl -1;
-        // }
+        // 0 return, execution succesful, -1 broken
+        WasmBoy._runWasmExport('executeFrame', []);
 
-
-        // WasmBoy.setCanvas(canvasElement);
-        WasmBoy._runWasmExport('executeMultipleFrames', [1]);
-        // Draw a screenshot of the frame reached
         getImageDataFromFrame().then((imageDataArray: any) => {
 
-            // console.log(imageDataArray);
-            // Add our new imageData
+            // load image data into canvas
             canvasImageData.data.set(imageDataArray);
-
             canvasContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
             canvasContext.putImageData(canvasImageData, 0, 0);
         })
-
-        setTimeout(loop, (1000/30));
-
     }
 
     function pause() {
