@@ -10,13 +10,13 @@
         <button @touchstart="emit('updateControl', EControl.RIGHT, true)" @touchend="emit('updateControl', EControl.RIGHT, false)">RIGHT</button>
         <button @touchstart="emit('updateControl', EControl.SELECT, true)" @touchend="emit('updateControl', EControl.SELECT, false)">SELECT</button>
         <button @touchstart="emit('updateControl', EControl.START, true)" @touchend="emit('updateControl', EControl.START, false)">START</button>
-    </div>
 
-    <div>
+        <button @click="emit('buttonClicked', EButton.SAVE)">SAVE</button>
+        <button @click="emit('buttonClicked', EButton.LOAD)">LOAD</button>
+
         <div id="zone_joystick" style="width:200px;height:200px;margin-bottom:20px;"></div>
-    </div>
 
-    
+    </div>  
     
 </template>
 
@@ -32,20 +32,11 @@
 
     import { onMounted, ref } from "vue";
     import nipplejs from 'nipplejs';
-    import { EControl } from "./../defines"
+    import { EControl, EButton } from "./../defines"
 
     let actualControl: EControl;
 
-    const emit = defineEmits(['updateControl'])
-
-    function tStart() {
-        console.log('touch start');
-    }
-
-    function tEnd() {
-        console.log('touch end');
-    }
-
+    const emit = defineEmits(['buttonClicked', 'updateControl'])
 
     onMounted(() => {
 

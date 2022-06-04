@@ -8,3 +8,8 @@ export enum EControl {
     SELECT,
     START
 }
+
+export enum EButton {
+    SAVE,
+    LOAD
+}
