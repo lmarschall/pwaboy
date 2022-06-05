@@ -48,7 +48,7 @@
             size: 100,
             threshold: 0.5,
             color: 'red',
-            position: { left: '50vw', bottom: '10vh' }
+            position: { left: '50vw', bottom: '20vh' }
         });
 
         joystick.on('dir', (dir:any, data: any) => {

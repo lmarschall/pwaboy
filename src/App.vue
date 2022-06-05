@@ -1,14 +1,12 @@
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
+// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setupimp
+import Home from './views/Home.vue'
+
 </script>
 
 <template>
-  <div class="alert alert-warning text-center" role="alert">
-    This app is still in development stage!
-    Send feedback via <a href="mailto:mail@lmarschall.com">mail</a>.
-  </div>
-  <router-view />
+  <Home></Home>
 </template>
 
 <style>
