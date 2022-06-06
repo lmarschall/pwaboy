@@ -2,28 +2,27 @@
 
     <!-- CONTAINER FOR STARTUP ELEMENTS -->
     <div v-show="interfaceState == EInterfaceStates.LOAD_ROM ||
-    interfaceState == EInterfaceStates.START_GAME"
-    class="container start-container">
+    interfaceState == EInterfaceStates.START_GAME" class="container start-container">
         <div class="d-flex flex-column">
-                <div class="grid-item text-center">
-                    <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.LOAD)"
-                        value="Load ROM">
-                    <input id="inputROM" type="file" class="btn btn-primary" @change="loadROM" accept=".gbc" hidden>
-                </div>
-    
-                <div class="grid-item text-center">
-                    <input id="loadedROMButton" type="button" class="btn btn-primary" disabled value="No ROM loaded">
-                </div>
-    
-                <div class="grid-item text-center">
-                    <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.NEW_GAME)"
-                        v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM" value="New Game">
-                </div>
-    
-                <div class="grid-item text-center">
-                    <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.CONTINUE)"
-                        v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM" value="Continue">
-                </div>
+            <div class="grid-item text-center">
+                <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.LOAD)"
+                    value="Load ROM">
+                <input id="inputROM" type="file" class="btn btn-primary" @change="loadROM" accept=".gbc" hidden>
+            </div>
+
+            <div class="grid-item text-center">
+                <input id="loadedROMButton" type="button" class="btn btn-primary" disabled value="No ROM loaded">
+            </div>
+
+            <div class="grid-item text-center">
+                <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.NEW_GAME)"
+                    v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM" value="New Game">
+            </div>
+
+            <div class="grid-item text-center">
+                <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.CONTINUE)"
+                    v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM" value="Continue">
+            </div>
         </div>
     </div>
 
@@ -37,56 +36,55 @@
         </div>
 
         <!-- CONTROLS -->
-        <Controls v-on:updateControl="updateControlStates"></Controls>
-
-                <!-- TEMPORARY BUTTON TO STOP PLAYING -->
-        <button @click="handleButtonClicked(EButton.GO_BACK)">GO BACK</button>
-
-        <!-- <button @click="unmute()">UNMUTE</button> -->
+        <Controls
+            v-if="interfaceState == EInterfaceStates.PLAY"
+            v-on:close="handleButtonClicked(EButton.GO_BACK)"
+            v-on:updateControl="updateControlStates">
+        </Controls>
     </div>
 
 </template>
 
 <style scoped>
-div#\#canvasFrame {
-    padding-top: 30px;
-    padding-bottom: 30px;
-    background-color: black;
-}
+    div#\#canvasFrame {
+        padding-top: 30px;
+        padding-bottom: 30px;
+        background-color: black;
+    }
 
-#wasmboyCanvas {
-    height: 288px;
-    width: 320px;
-    padding-left: 0;
-    padding-right: 0;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-    background-color: white;
-}
+    #wasmboyCanvas {
+        height: 288px;
+        width: 320px;
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        background-color: white;
+    }
 
-.btn.btn-primary {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    font-size: large;
-}
+    .btn.btn-primary {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        font-size: large;
+    }
 
-.start-container {
-    height: 100vh;
-    width: 100vw;
-    padding-top: 30px;
-    background-color: pink;
-}
+    .start-container {
+        height: 100vh;
+        width: 100vw;
+        padding-top: 30px;
+        background-color: pink;
+    }
 
-.game-container {
-    height: 100vh;
-    width: 100vw;
-    padding-top: 20px;
-    background-color: rgb(91, 91, 218);
-}
+    .game-container {
+        height: 100vh;
+        width: 100vw;
+        padding-top: 20px;
+        background-color: rgb(91, 91, 218);
+    }
 
-.grid-item {
-    margin: 2rem;
-}
+    .grid-item {
+        margin: 2rem;
+    }
 </style>
 
 <script setup lang="ts">
