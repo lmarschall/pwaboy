@@ -22,4 +22,8 @@ import Home from './views/Home.vue'
   --color-grey-blue: #334675;
   --color-dark-blue: #181D2A;
 }
+
+* {
+    touch-action: manipulation;
+}
 </style>
