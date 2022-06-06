@@ -10,6 +10,15 @@ export enum EControl {
 }
 
 export enum EButton {
-    SAVE,
-    LOAD
+    LOAD,
+    CONTINUE,
+    NEW_GAME,
+    GO_BACK
+}
+
+export enum EInterfaceStates {
+    LOAD_ROM,
+    START_GAME,
+    PLAY,
+    TRANSITION
 }
