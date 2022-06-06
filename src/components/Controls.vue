@@ -66,6 +66,10 @@
 </template>
 
 <style scoped>
+
+    .row {
+        margin-top: 40px;
+    }
     .btn.btn-primary {
         margin: 0.5rem;
         background-color: var(--color-grey-blue);
@@ -74,7 +78,7 @@
 
     #zone_joystick {
         width: 100px;
-        height: 200px;
+        height: 100px;
     }
 </style>
 
@@ -98,11 +102,12 @@
 
             const joystick = nipplejs.create({
                 zone: joystickZone,
-                mode: 'dynamic',
+                mode: 'static',
                 size: 100,
                 threshold: 0.5,
                 color: 'black',
-                // position: { left: '75px', top: '448px' }
+                dynamicPage: true,
+                position: { left: '75px', top: '448px' }
             });
 
             joystick.on('dir', (dir:any, data: any) => {
