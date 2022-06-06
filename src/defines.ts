@@ -13,7 +13,9 @@ export enum EButton {
     LOAD,
     CONTINUE,
     NEW_GAME,
-    GO_BACK
+    GO_BACK,
+    IMPORT,
+    EXPORT
 }
 
 export enum EInterfaceStates {

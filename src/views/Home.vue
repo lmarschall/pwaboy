@@ -23,6 +23,17 @@
                 <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.CONTINUE)"
                     v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM" value="Continue">
             </div>
+
+            <div class="grid-item text-center">
+                <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.IMPORT)"
+                    v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM" value="Import">
+                <input id="inputDB" type="file" class="btn btn-primary" @change="importStuff" accept=".json" hidden>
+            </div>
+
+            <div class="grid-item text-center">
+                <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.EXPORT)"
+                    v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM" value="Export">
+            </div>
         </div>
     </div>
 
@@ -93,10 +104,22 @@ import { onMounted, onUpdated, ref } from "vue";
 import { WasmBoy } from "wasmboy";
 import { EButton, EControl, EInterfaceStates } from "../defines";
 
+import Dexie from "dexie";
+import {importDB, exportDB, importInto, peakImportFile} from "dexie-export-import";
+
 import Controls from "../components/Controls.vue";
+
+let db: any;
 
 const interfaceState = ref(EInterfaceStates.LOAD_ROM as EInterfaceStates);
 // const romPath = ref(new File([""], "filename") as File);
+
+initDB();
+
+async function initDB() {
+    db = await new Dexie("wasmboy").open();
+    console.log(db);
+}
 
 const controlStates = {
     UP: false,
@@ -143,7 +166,10 @@ const WasmBoyOptions = {
     // updateAudioCallback: async (audioContext: any, audioBufferSourceNode: any) => {
     //     return audioBufferSourceNode;
     // }
-    // saveStateCallback: false,
+    saveStateCallback: async (saveStateObject: any) => {
+        console.log("save state callback");
+	    // saveStateObject.screenshotCanvasDataURL = canvasElement.toDataURL();
+    }
     // onReady: false,
     // onPlay: false,
     // onPause: false,
@@ -155,24 +181,50 @@ function fps() {
 }
 
 WasmBoy.config(WasmBoyOptions)
-    .then(() => {
-        console.log('WasmBoy is configured!');
+.then(() => {
+    console.log('WasmBoy is configured!');
 
-        // check if any rom was already provided and try to load it
-        // const lastRom = localStorage.getItem('lastRom');
+    // await new Dexie("wasmboy").open().then((db)
 
-        // console.log(lastRom);
+    // check if any rom was already provided and try to load it
+    // const lastRom = localStorage.getItem('lastRom');
 
-        // if(lastRom) {
-        //     const fileJSON = JSON.parse(lastRom) as any
-        //     const file = new File([fileJSON.arrayBuffer], fileJSON.name, fileJSON);
-        //     const event = { target: { files: [file]}};
-        //     console.log(event);
-        // loadROM(event);
-        // }
-    }).catch(() => {
-        console.error("Error Configuring WasmBoy...");
+    // console.log(lastRom);
+
+    // if(lastRom) {
+    //     const fileJSON = JSON.parse(lastRom) as any
+    //     const file = new File([fileJSON.arrayBuffer], fileJSON.name, fileJSON);
+    //     const event = { target: { files: [file]}};
+    //     console.log(event);
+    // loadROM(event);
+    // }
+}).catch(() => {
+    console.error("Error Configuring WasmBoy...");
+});
+
+function importStuff(event: any) {
+    console.log(event.target.files[0])
+    // Dexie.delete('wasmboy');
+
+    db.tables.forEach(function (table: any) {
+        // if (table === db[table.name]);
+        table.clear();
     });
+
+    importDB(event.target.files[0]).then((db: any) => {
+        console.log(db);
+    })
+
+    // initDB();
+}
+
+function download(file: any, fileName: any, contentType: any) {
+    var a = document.createElement("a");
+    // var file = new Blob([content], {type: contentType});
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
+}
 
 function updateControlStates(controlKey: EControl, active: boolean) {
 
@@ -207,6 +259,22 @@ function handleButtonClicked(buttonKey: EButton) {
         });
     }
 
+    if (buttonKey == EButton.EXPORT) {
+        exportDB(db).then((blob: any) => {
+            console.log(blob);
+            download(blob, "dexie-export.json", "application/json");
+        })
+    }
+
+    if (buttonKey == EButton.IMPORT) {
+
+        const inputDB = document.getElementById("inputDB");
+
+        if (inputDB) {
+            inputDB.click();
+        }
+    }
+
     if (buttonKey == EButton.GO_BACK) {
 
         WasmBoy.saveState().then(() => {
@@ -229,9 +297,12 @@ function handleButtonClicked(buttonKey: EButton) {
         WasmBoy.resumeAudioContext();
         WasmBoy.getSaveStates().then((saveStates: any) => {
 
+            console.log(saveStates);
+
             // check if any states where stored and load last state when given
             if (saveStates.length) {
-                WasmBoy.loadState(saveStates.at(-1)).then(() => {
+                const lastSaveState = saveStates.at(-1)
+                WasmBoy.loadState(lastSaveState).then(() => {
                     play();
                 });
             }
