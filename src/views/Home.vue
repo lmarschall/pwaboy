@@ -49,7 +49,7 @@
         <!-- CONTROLS -->
         <Controls
             v-if="interfaceState == EInterfaceStates.PLAY"
-            v-on:close="handleButtonClicked(EButton.GO_BACK)"
+            v-on:closed="handleButtonClicked(EButton.GO_BACK)"
             v-on:updateControl="updateControlStates">
         </Controls>
     </div>

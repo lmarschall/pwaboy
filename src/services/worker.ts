@@ -1,155 +1,161 @@
 // TESTING GROUND FOR CUSTOM AUDIO AND GRAPHICS FUNCTIONS
 
-let canvasElement any = undefined;
-let canvasContext: any = undefined;
-let canvasImageData: any = undefined;
 
-// Define some constants
-const GAMEBOY_CAMERA_WIDTH = 160;
-const GAMEBOY_CAMERA_HEIGHT = 144;
-const GAMEBOY_CAMERA_SCALE = 2;
-
-const WASMBOY_SAMPLE_RATE = 44100;
-// These magic numbers just come from preference, can be set as options
-const DEFAULT_AUDIO_LATENCY_IN_MILLI = 100;
-// Some constants that use the ones above that will allow for faster performance
-const DEFAULT_AUDIO_LATENCY_IN_SECONDS = DEFAULT_AUDIO_LATENCY_IN_MILLI / 1000;
-
-function init() {
-
-    canvasElement = document.getElementById('wasmboyCanvas');
-
-    if(canvasElement) {
-
-        canvasContext = canvasElement.getContext('2d');
-
-        canvasElement.width = GAMEBOY_CAMERA_WIDTH;
-        canvasElement.height = GAMEBOY_CAMERA_HEIGHT;
-        canvasImageData = canvasContext.createImageData(canvasElement.width, canvasElement.height);
-
-        canvasContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-        // WasmBoy.setCanvas(canvasElement);
-    } else {
-        console.log("NO CANVAS")
-    }
-
+export function test() {
+    
+    console.log("foobar");
 }
 
-// Function to get our RGB image data array from our frame
-const getImageDataFromFrame = async () => {
-    // Get our output frame
-    const frameInProgressVideoOutputLocation = await WasmBoy._getWasmConstant('FRAME_LOCATION');
-    const frameInProgressMemory = await WasmBoy._getWasmMemorySection(
-        frameInProgressVideoOutputLocation,
-        frameInProgressVideoOutputLocation + GAMEBOY_CAMERA_HEIGHT * GAMEBOY_CAMERA_WIDTH * 3 + 1
-    );
+// let canvasElement any = undefined;
+// let canvasContext: any = undefined;
+// let canvasImageData: any = undefined;
 
-    // Going to compare pixel values from the VRAM to confirm tests
-    const imageDataArray = [];
-    const rgbColor = [];
+// // Define some constants
+// const GAMEBOY_CAMERA_WIDTH = 160;
+// const GAMEBOY_CAMERA_HEIGHT = 144;
+// const GAMEBOY_CAMERA_SCALE = 2;
 
-    for (let y = 0; y < GAMEBOY_CAMERA_HEIGHT; y++) {
-        for (let x = 0; x < GAMEBOY_CAMERA_WIDTH; x++) {
-            // Each color has an R G B component
-            let pixelStart = (y * GAMEBOY_CAMERA_WIDTH + x) * 3;
+// const WASMBOY_SAMPLE_RATE = 44100;
+// // These magic numbers just come from preference, can be set as options
+// const DEFAULT_AUDIO_LATENCY_IN_MILLI = 100;
+// // Some constants that use the ones above that will allow for faster performance
+// const DEFAULT_AUDIO_LATENCY_IN_SECONDS = DEFAULT_AUDIO_LATENCY_IN_MILLI / 1000;
 
-            for (let color = 0; color < 3; color++) {
-                rgbColor[color] = frameInProgressMemory[pixelStart + color];
-            }
+// function init() {
 
-            // Doing graphics using second answer on:
-            // https://stackoverflow.com/questions/4899799/whats-the-best-way-to-set-a-single-pixel-in-an-html5-canvas
-            // Image Data mapping
-            const imageDataIndex = (x + y * GAMEBOY_CAMERA_WIDTH) * 4;
+//     canvasElement = document.getElementById('wasmboyCanvas');
 
-            imageDataArray[imageDataIndex] = rgbColor[0];
-            imageDataArray[imageDataIndex + 1] = rgbColor[1];
-            imageDataArray[imageDataIndex + 2] = rgbColor[2];
-            // Alpha, no transparency
-            imageDataArray[imageDataIndex + 3] = 255;
-        }
-    }
+//     if(canvasElement) {
 
-    return imageDataArray;
-}
+//         canvasContext = canvasElement.getContext('2d');
 
-function updateGraphicsCallback (imageDataArray: any) {
-    console.log(imageDataArray);
-    // Logic from: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas
-    for (var i = 0; i < imageDataArray.length; i += 4) {
-        imageDataArray[i]     = 255 - imageDataArray[i];     // red
-        imageDataArray[i + 1] = 255 - imageDataArray[i + 1]; // green
-        imageDataArray[i + 2] = 255 - imageDataArray[i + 2]; // blue
-    }
-}
+//         canvasElement.width = GAMEBOY_CAMERA_WIDTH;
+//         canvasElement.height = GAMEBOY_CAMERA_HEIGHT;
+//         canvasImageData = canvasContext.createImageData(canvasElement.width, canvasElement.height);
 
-const sampleAudio = async () => {
+//         canvasContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+//         // WasmBoy.setCanvas(canvasElement);
+//     } else {
+//         console.log("NO CANVAS")
+//     }
 
-    const numberOfSamples = await WasmBoy._runWasmExport('getNumberOfSamplesInAudioBuffer', [])
-    // console.log("number of samples");
-    // console.log(numberOfSamples)
+// }
 
-    const audioLocation = await WasmBoy._getWasmConstant('AUDIO_BUFFER_LOCATION');
-    // console.log(audioLocation);
-    // const audioInProgressMemory = await WasmBoy._getWasmMemorySection(
-    //     frameInProgressVideoOutputLocation,
-    //     frameInProgressVideoOutputLocation + GAMEBOY_CAMERA_HEIGHT * GAMEBOY_CAMERA_WIDTH * 3 + 1
-    // );
+// // Function to get our RGB image data array from our frame
+// const getImageDataFromFrame = async () => {
+//     // Get our output frame
+//     const frameInProgressVideoOutputLocation = await WasmBoy._getWasmConstant('FRAME_LOCATION');
+//     const frameInProgressMemory = await WasmBoy._getWasmMemorySection(
+//         frameInProgressVideoOutputLocation,
+//         frameInProgressVideoOutputLocation + GAMEBOY_CAMERA_HEIGHT * GAMEBOY_CAMERA_WIDTH * 3 + 1
+//     );
 
-    // AUDIO_BUFFER_LOCATION
+//     // Going to compare pixel values from the VRAM to confirm tests
+//     const imageDataArray = [];
+//     const rgbColor = [];
 
-    await WasmBoy._runWasmExport('clearAudioBuffer', [])
+//     for (let y = 0; y < GAMEBOY_CAMERA_HEIGHT; y++) {
+//         for (let x = 0; x < GAMEBOY_CAMERA_WIDTH; x++) {
+//             // Each color has an R G B component
+//             let pixelStart = (y * GAMEBOY_CAMERA_WIDTH + x) * 3;
 
-    const leftChannelBuffer = 0
-    const rightChannelBuffer = 0
+//             for (let color = 0; color < 3; color++) {
+//                 rgbColor[color] = frameInProgressMemory[pixelStart + color];
+//             }
 
-    // Get our buffers as floats
-    const leftChannelBufferAsFloat = new Float32Array(leftChannelBuffer);
-    const rightChannelBufferAsFloat = new Float32Array(rightChannelBuffer);
+//             // Doing graphics using second answer on:
+//             // https://stackoverflow.com/questions/4899799/whats-the-best-way-to-set-a-single-pixel-in-an-html5-canvas
+//             // Image Data mapping
+//             const imageDataIndex = (x + y * GAMEBOY_CAMERA_WIDTH) * 4;
 
-    // Create an audio buffer, with a left and right channel
-    let audioBuffer = audioContext.createBuffer(2, numberOfSamples, WASMBOY_SAMPLE_RATE);
-    // this._setSamplesToAudioBuffer(this.audioBuffer, leftChannelBufferAsFloat, rightChannelBufferAsFloat);
+//             imageDataArray[imageDataIndex] = rgbColor[0];
+//             imageDataArray[imageDataIndex + 1] = rgbColor[1];
+//             imageDataArray[imageDataIndex + 2] = rgbColor[2];
+//             // Alpha, no transparency
+//             imageDataArray[imageDataIndex + 3] = 255;
+//         }
+//     }
 
-    // Get an AudioBufferSourceNode.
-    // This is the AudioNode to use when we want to play an AudioBuffer
-    let source = audioContext.createBufferSource();
+//     return imageDataArray;
+// }
 
-    // set the buffer in the AudioBufferSourceNode
-    source.buffer = audioBuffer;
+// function updateGraphicsCallback (imageDataArray: any) {
+//     console.log(imageDataArray);
+//     // Logic from: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas
+//     for (var i = 0; i < imageDataArray.length; i += 4) {
+//         imageDataArray[i]     = 255 - imageDataArray[i];     // red
+//         imageDataArray[i + 1] = 255 - imageDataArray[i + 1]; // green
+//         imageDataArray[i + 2] = 255 - imageDataArray[i + 2]; // blue
+//     }
+// }
 
-    // source.playbackRate.setValueAtTime(playbackRate, this.audioContext.currentTime);
+// const sampleAudio = async () => {
 
-    let finalNode = source;
+//     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-    // connect the AudioBufferSourceNode to the
-    // destination so we can hear the sound
-    finalNode.connect(audioContext.destination);
+//     const numberOfSamples = await WasmBoy._runWasmExport('getNumberOfSamplesInAudioBuffer', [])
+//     // console.log("number of samples");
+//     // console.log(numberOfSamples)
 
-    let audioContextCurrentTime = audioContext.currentTime;
-    let audioContextCurrentTimeWithLatency = audioContextCurrentTime + DEFAULT_AUDIO_LATENCY_IN_SECONDS;
-    // let audioPlaytime = audioPlaytime || audioContextCurrentTimeWithLatency;
-    let audioPlaytime = audioContextCurrentTimeWithLatency;
+//     const audioLocation = await WasmBoy._getWasmConstant('AUDIO_BUFFER_LOCATION');
+//     // console.log(audioLocation);
+//     // const audioInProgressMemory = await WasmBoy._getWasmMemorySection(
+//     //     frameInProgressVideoOutputLocation,
+//     //     frameInProgressVideoOutputLocation + GAMEBOY_CAMERA_HEIGHT * GAMEBOY_CAMERA_WIDTH * 3 + 1
+//     // );
 
-    // start the source playing
-    source.start(audioPlaytime);
+//     // AUDIO_BUFFER_LOCATION
+
+//     await WasmBoy._runWasmExport('clearAudioBuffer', [])
+
+//     const leftChannelBuffer = 0
+//     const rightChannelBuffer = 0
+
+//     // Get our buffers as floats
+//     const leftChannelBufferAsFloat = new Float32Array(leftChannelBuffer);
+//     const rightChannelBufferAsFloat = new Float32Array(rightChannelBuffer);
+
+//     // Create an audio buffer, with a left and right channel
+//     let audioBuffer = audioContext.createBuffer(2, numberOfSamples, WASMBOY_SAMPLE_RATE);
+//     // this._setSamplesToAudioBuffer(this.audioBuffer, leftChannelBufferAsFloat, rightChannelBufferAsFloat);
+
+//     // Get an AudioBufferSourceNode.
+//     // This is the AudioNode to use when we want to play an AudioBuffer
+//     let source = audioContext.createBufferSource();
+
+//     // set the buffer in the AudioBufferSourceNode
+//     source.buffer = audioBuffer;
+
+//     // source.playbackRate.setValueAtTime(playbackRate, this.audioContext.currentTime);
+
+//     let finalNode = source;
+
+//     // connect the AudioBufferSourceNode to the
+//     // destination so we can hear the sound
+//     finalNode.connect(audioContext.destination);
+
+//     let audioContextCurrentTime = audioContext.currentTime;
+//     let audioContextCurrentTimeWithLatency = audioContextCurrentTime + DEFAULT_AUDIO_LATENCY_IN_SECONDS;
+//     // let audioPlaytime = audioPlaytime || audioContextCurrentTimeWithLatency;
+//     let audioPlaytime = audioContextCurrentTimeWithLatency;
+
+//     // start the source playing
+//     source.start(audioPlaytime);
 
     
-}
+// }
 
-function loop() {
+// function loop() {
 
-    // 0 return, execution succesful, -1 broken
-    WasmBoy._runWasmExport('executeFrame', []);
+//     // 0 return, execution succesful, -1 broken
+//     WasmBoy._runWasmExport('executeFrame', []);
 
-    getImageDataFromFrame().then((imageDataArray: any) => {
+//     getImageDataFromFrame().then((imageDataArray: any) => {
 
-        // load image data into canvas
-        canvasImageData.data.set(imageDataArray);
-        canvasContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
-        canvasContext.putImageData(canvasImageData, 0, 0);
-    })
-}
+//         // load image data into canvas
+//         canvasImageData.data.set(imageDataArray);
+//         canvasContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
+//         canvasContext.putImageData(canvasImageData, 0, 0);
+//     })
+// }

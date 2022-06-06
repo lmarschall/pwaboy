@@ -14,7 +14,7 @@
                         <button
                             type="button"
                             class="btn-close"
-                            @click="emit('close')"
+                            @click="emit('closed')"
                             data-bs-dismiss="modal"
                             aria-label="Close">
                         </button>
