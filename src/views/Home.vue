@@ -41,6 +41,8 @@
 
                 <!-- TEMPORARY BUTTON TO STOP PLAYING -->
         <button @click="handleButtonClicked(EButton.GO_BACK)">GO BACK</button>
+
+        <!-- <button @click="unmute()">UNMUTE</button> -->
     </div>
 
 </template>
@@ -201,6 +203,7 @@ function handleButtonClicked(buttonKey: EButton) {
 
     if (buttonKey == EButton.NEW_GAME) {
 
+        WasmBoy.resumeAudioContext();
         WasmBoy.saveState().then(() => {
             play();
         });
@@ -225,6 +228,7 @@ function handleButtonClicked(buttonKey: EButton) {
 
     if (buttonKey == EButton.CONTINUE) {
 
+        WasmBoy.resumeAudioContext();
         WasmBoy.getSaveStates().then((saveStates: any) => {
 
             // check if any states where stored and load last state when given
@@ -281,13 +285,16 @@ async function loadROM(event: any) {
 
 function play() {
 
-    WasmBoy.resumeAudioContext();
     WasmBoy.play().then(() => {
         console.log('WasmBoy is playing!');
         interfaceState.value = EInterfaceStates.PLAY;
     }).catch(() => {
         console.error('WasmBoy had an error playing...');
     });
+}
+
+async function unmute() {
+    await WasmBoy.resumeAudioContext()
 }
 
 function pause() {
