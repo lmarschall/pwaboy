@@ -171,10 +171,15 @@ const WasmBoyOptions = {
     onPause: () => {
         console.log("on pause");
 
-        WasmBoy.saveState().then(() => {
+        // check if we were actually playing and save game
+        if(interfaceState.value == EInterfaceStates.PLAY) {
 
-            interfaceState.value = EInterfaceStates.START_GAME;
-        });
+            WasmBoy.saveState().then(() => {
+    
+                interfaceState.value = EInterfaceStates.START_GAME;
+            });
+        }
+
     },
     // updateAudioCallback: async (audioContext: any, audioBufferSourceNode: any) => {
     //     return audioBufferSourceNode;
