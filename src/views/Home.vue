@@ -170,6 +170,8 @@ const WasmBoyOptions = {
     },
     onPause: () => {
         console.log("on pause");
+
+        interfaceState.value = EInterfaceStates.START_GAME;
     },
     // updateAudioCallback: async (audioContext: any, audioBufferSourceNode: any) => {
     //     return audioBufferSourceNode;
