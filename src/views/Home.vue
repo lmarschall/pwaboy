@@ -170,16 +170,6 @@ const WasmBoyOptions = {
     },
     onPause: () => {
         console.log("on pause");
-
-        // check if we were actually playing and save game
-        if(interfaceState.value == EInterfaceStates.PLAY) {
-
-            WasmBoy.saveState().then(() => {
-    
-                interfaceState.value = EInterfaceStates.START_GAME;
-            });
-        }
-
     },
     // updateAudioCallback: async (audioContext: any, audioBufferSourceNode: any) => {
     //     return audioBufferSourceNode;
@@ -387,5 +377,26 @@ function pause() {
         console.error('WasmBoy had an error pausing...');
     });
 }
+
+function handleVisibilityChange() {
+    if (document.visibilityState === "hidden") {
+        console.log("hidden");
+
+        // check if we were actually playing and save game
+        if(interfaceState.value == EInterfaceStates.PLAY) {
+
+            console.log("save because paused in play mode");
+
+            WasmBoy.saveState().then(() => {
+    
+                interfaceState.value = EInterfaceStates.START_GAME;
+            });
+        }
+    } else {
+        console.log("visible");
+    }
+}
+
+document.addEventListener("visibilitychange", handleVisibilityChange, false);
 
 </script>

@@ -99,7 +99,7 @@
     }
 
     .btn.btn-none {
-        background-color: white;
+        opacity: 1;
     }
 
     .modal-dialog {
