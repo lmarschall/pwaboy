@@ -5,33 +5,33 @@
     interfaceState == EInterfaceStates.START_GAME" class="container start-container">
         <div class="d-flex flex-column">
             <div class="grid-item text-center">
-                <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.LOAD)"
+                <input type="button" class="btn btn-start" @click="handleButtonClicked(EButton.LOAD)"
                     value="Load ROM">
-                <input id="inputROM" type="file" class="btn btn-primary" @change="loadROM" accept=".gbc" hidden>
+                <input id="inputROM" type="file" class="btn btn-start" @change="loadROM" accept=".gbc" hidden>
             </div>
 
             <div class="grid-item text-center">
-                <input id="loadedROMButton" type="button" class="btn btn-primary" disabled value="No ROM loaded">
+                <input id="loadedROMButton" type="button" class="btn btn-start" disabled value="No ROM loaded" >
             </div>
 
             <div class="grid-item text-center">
-                <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.NEW_GAME)"
-                    v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM" value="New Game">
-            </div>
-
-            <div class="grid-item text-center">
-                <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.CONTINUE)"
+                <input type="button" class="btn btn-start" @click="handleButtonClicked(EButton.CONTINUE)"
                     v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM" value="Continue">
             </div>
 
             <div class="grid-item text-center">
-                <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.IMPORT)"
+                <input type="button" class="btn btn-start" @click="handleButtonClicked(EButton.NEW_GAME)"
+                    v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM" value="New Game">
+            </div>
+            
+            <div class="grid-item text-center">
+                <input type="button" class="btn btn-start" @click="handleButtonClicked(EButton.IMPORT)"
                     v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM" value="Import">
                 <input id="inputDB" type="file" class="btn btn-primary" @change="importStuff" accept=".json" hidden>
             </div>
 
             <div class="grid-item text-center">
-                <input type="button" class="btn btn-primary" @click="handleButtonClicked(EButton.EXPORT)"
+                <input type="button" class="btn btn-start" @click="handleButtonClicked(EButton.EXPORT)"
                     v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM" value="Export">
             </div>
         </div>
@@ -74,16 +74,17 @@
         background-color: white;
     }
 
-    .btn.btn-primary {
+    .btn.btn-start {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         font-size: large;
+        background-color: #aaa;
     }
 
     .start-container {
         height: 100vh;
         width: 100vw;
         padding-top: 30px;
-        background-color: pink;
+        background-color: rgb(91, 91, 218);
     }
 
     .game-container {
@@ -95,6 +96,13 @@
 
     .grid-item {
         margin: 2rem;
+    }
+
+    .grid-item-icon {
+        position: absolute;
+        margin-left: 1em;
+        margin-top: 0.3rem;
+        font-size: large;
     }
 </style>
 
@@ -228,16 +236,12 @@ function download(file: any, fileName: any, contentType: any) {
 
 function updateControlStates(controlKey: EControl, active: boolean) {
 
-    console.log(EControl[controlKey]);
-
     if (EControl[controlKey] != undefined) {
 
         controlStates[EControl[controlKey]] = active
 
         WasmBoy.disableDefaultJoypad();
         WasmBoy.setJoypadState(controlStates);
-
-        console.log(controlStates);
     }
 }
 

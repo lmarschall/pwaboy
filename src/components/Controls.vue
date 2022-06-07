@@ -4,20 +4,20 @@
     <div class="container">
 
         <div class="modal fade" data-bs-backdrop="static" id="controlModal" tabindex="-1">
-            <div class="modal-dialog">
+            <div class="modal-dialog" id="modalDialog">
                 <div class="modal-content">
                     <!-- <div class="modal-header">
                         <h5 class="modal-title">Modal title</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div> -->
                     <div class="modal-body">
-                        <button
-                            type="button"
-                            class="btn-close"
-                            @click="emit('closed')"
-                            data-bs-dismiss="modal"
-                            aria-label="Close">
-                        </button>
+                        <div class="text-center span-frame">
+                            <button
+                                type="button"
+                                id="modalPan"
+                                class="btn btn-pan">
+                            </button>
+                        </div>
                         <div class="row">
                             <div class="col">
                                 <div id="zone_joystick"></div>
@@ -83,9 +83,15 @@
 
 <style scoped>
 
-    .btn-close {
+    .btn-pan {
+        width: 80px;
+        height: 10px;
+        background-color: black;
+    }
+
+    .span-frame {
         position: absolute;
-        left: 50%;
+        width: 100%;
     }
 
     .row {
@@ -146,6 +152,7 @@
     import { onMounted, ref } from "vue";
     import { Modal } from 'bootstrap';
     import nipplejs from 'nipplejs';
+    import { PointerListener, Pan } from 'contactjs'
     import { EControl, EButton } from "./../defines"
 
     let actualControl: EControl;
@@ -171,7 +178,6 @@
             });
 
             joystick.on('dir', (dir:any, data: any) => {
-                console.log(data.direction.angle);
 
                 emit("updateControl", actualControl, false);
 
@@ -197,11 +203,50 @@
         const modalElement = document.getElementById('controlModal') as HTMLElement
         
         if(modalElement) {
-            const showMoreModal = new Modal(modalElement, {
+            const controlsModal = new Modal(modalElement, {
                 keyboard: false,
                 backdrop: false
             })
-            if(showMoreModal) showMoreModal.show();
+            if(controlsModal) controlsModal.show();
+
+            const modalDialog = document.getElementById('modalDialog') as HTMLElement
+            const modalPan = document.getElementById('modalPan') as HTMLElement
+
+            if(modalDialog && modalPan) {
+
+                const options = {
+                    "supportedGestures": [Pan]
+                };
+
+                var pointerListener = new PointerListener(modalPan, options);
+
+                modalPan.addEventListener('pan', function(event: any) {
+
+                    var x = 0;
+                    var y = event.detail.global.deltaY;
+                    var transformString = 'translate3d(' + x + 'px, ' + y + 'px, 0)';
+
+                    modalDialog.style.transform = transformString;
+                });
+
+                const intervalId = setInterval(checkModalPosition, 500);
+
+                function checkModalPosition() {
+
+                    // check if controls are still fully visible
+                    // if not close play interface
+                    var elemRect = modalDialog.getBoundingClientRect();
+                    var bodyRect = document.body.getBoundingClientRect();
+                    var offset = elemRect.y - bodyRect.height;
+                    console.log(offset);
+
+                    if(offset >= -200) {
+                        clearInterval(intervalId);
+                        controlsModal.hide();
+                        emit('closed');
+                    }
+                }
+            }
         }
     })
 
