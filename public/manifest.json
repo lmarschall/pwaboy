@@ -1,12 +1,12 @@
 {
-    "name": "PWA Huuuuuub",
-    "short_name": "PWA Hub",
-    "description": "Progressive Web App to list all the cool pwas out there",
+    "name": "PWA GameBoy Emulator",
+    "short_name": "PWABoy",
+    "description": "Progressive Web App to lemulate GameBoy device, powered by WASMBoy",
     "start_url": "/",
     "display": "standalone",
-    "orientation": "portrait-primary",
-    "theme_color": "#764ABC",
-    "background_color": "#764ABC",
+    "orientation": "portrait",
+    "theme_color": "#5B5BDA",
+    "background_color": "#5B5BDA",
     "icons": [
       {
         "src": "assets/icons/icon-48x48.png",
