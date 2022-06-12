@@ -320,7 +320,6 @@ async function loadROM(event: any) {
     const loadedROMButton = document.getElementById("loadedROMButton") as any;
     const wasmBoyCanvas = document.getElementById("wasmboyCanvas");
 
-    loadedROMButton.value = event.target.files[0].name;
     await WasmBoy.setCanvas(wasmBoyCanvas);
 
     // const romFile = {
@@ -349,6 +348,7 @@ async function loadROM(event: any) {
 
     WasmBoy.loadROM(event.target.files[0]).then(() => {
         console.log('WasmBoy ROM loaded!');
+        loadedROMButton.value = event.target.files[0].name;
         interfaceState.value = EInterfaceStates.START_GAME;
     }).catch(() => {
         console.error('Error loading the ROM');
