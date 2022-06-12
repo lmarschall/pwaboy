@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
+    "postbuild": "export CACHE_ID=$(echo $RANDOM | md5sum | head -c 20); /usr/bin/envsubst '$CACHE_ID' < public/serviceworker.js > dist/serviceworker.js;",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview"
   },
