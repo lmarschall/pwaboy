@@ -3,7 +3,7 @@
     <!-- CONTAINER FOR STARTUP ELEMENTS -->
     <div v-show="interfaceState == EInterfaceStates.LOAD_ROM ||
     interfaceState == EInterfaceStates.START_GAME" class="container start-container">
-        <div class="d-flex flex-column">
+        <div class="d-flex flex-column justify-content-center">
             <div class="grid-item text-center">
                 <input type="button" class="btn btn-start" @click="handleButtonClicked(EButton.LOAD)"
                     value="Load ROM">
@@ -92,6 +92,10 @@
         width: 100vw;
         padding-top: 20px;
         background-color: rgb(91, 91, 218);
+    }
+
+    .d-flex.flex-column.justify-content-center {
+        height: -webkit-fill-available;
     }
 
     .grid-item {

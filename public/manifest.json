@@ -1,7 +1,7 @@
 {
     "name": "PWA GameBoy Emulator",
     "short_name": "PWABoy",
-    "description": "Progressive Web App to lemulate GameBoy device, powered by WASMBoy",
+    "description": "Progressive Web App to emulate GameBoy device, powered by WASMBoy",
     "start_url": "/",
     "display": "standalone",
     "orientation": "portrait",

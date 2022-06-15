@@ -149,19 +149,18 @@
 
 <script setup lang="ts">
 
-    import { onMounted, ref } from "vue";
-    import { Modal } from 'bootstrap';
     import nipplejs from 'nipplejs';
+    
+    import { Modal } from 'bootstrap';
+    import { onMounted, ref } from 'vue';
     import { PointerListener, Pan } from 'contactjs'
-    import { EControl, EButton } from "./../defines"
+    import { EControl, EButton } from './../defines'
 
     let actualControl: EControl;
 
     const emit = defineEmits(['updateControl', 'closed'])
 
     onMounted(() => {
-
-        console.log("mounted");
 
         const joystickZone = document.getElementById('zone_joystick') || undefined;
 
@@ -193,7 +192,6 @@
             })
 
             joystick.on('end', (dir:any, data: any) => {
-                console.log(data);
 
                 emit("updateControl", actualControl, false);
 
@@ -218,7 +216,7 @@
                     "supportedGestures": [Pan]
                 };
 
-                var pointerListener = new PointerListener(modalPan, options);
+                const pointerListener = new PointerListener(modalPan, options);
 
                 modalPan.addEventListener('pan', function(event: any) {
 
