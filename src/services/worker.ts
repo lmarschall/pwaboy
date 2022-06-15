@@ -1,9 +1,7 @@
 // TESTING GROUND FOR CUSTOM AUDIO AND GRAPHICS FUNCTIONS
 
-
 export function test() {
-    
-    console.log("foobar");
+  console.log("foobar");
 }
 
 // let canvasElement any = undefined;
@@ -143,7 +141,6 @@ export function test() {
 //     // start the source playing
 //     source.start(audioPlaytime);
 
-    
 // }
 
 // function loop() {
