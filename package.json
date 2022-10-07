@@ -22,13 +22,18 @@
   },
   "devDependencies": {
     "@types/bootstrap": "^5.1.12",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
     "@vitejs/plugin-vue": "^2.3.3",
-    "eslint": "^8.17.0",
+    "@vue/eslint-config-typescript": "^11.0.2",
+    "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-vue": "^9.1.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-vue": "^9.6.0",
     "prettier": "2.7.0",
     "typescript": "^4.5.4",
     "vite": "^2.9.9",
+    "vue-eslint-parser": "^9.1.0",
     "vue-tsc": "^0.34.7"
   }
 }
