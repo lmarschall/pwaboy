@@ -222,7 +222,7 @@ onMounted(() => {
         supportedGestures: [Pan],
       };
 
-      // const pointerListener = new PointerListener(modalPan, options);
+      new PointerListener(modalPan, options);
 
       modalPan.addEventListener("pan", function (event: any) {
         const x = 0;
