@@ -157,6 +157,10 @@ import { EControl, EButton } from "./../defines";
 
 let actualControl: EControl;
 
+const intervalId = ref(0);
+const modalDialog = ref(null as HTMLElement);
+const controlsModal = ref(null as Modal);
+
 const emit = defineEmits(["updateControl", "closed"]);
 
 onMounted(() => {
@@ -204,47 +208,46 @@ onMounted(() => {
   const modalElement = document.getElementById("controlModal") as HTMLElement;
 
   if (modalElement) {
-    const controlsModal = new Modal(modalElement, {
+    controlsModal.value = new Modal(modalElement, {
       keyboard: false,
       backdrop: false,
     });
-    if (controlsModal) controlsModal.show();
+    if (controlsModal.value) controlsModal.value.show();
 
-    const modalDialog = document.getElementById("modalDialog") as HTMLElement;
+    modalDialog.value = document.getElementById("modalDialog") as HTMLElement;
     const modalPan = document.getElementById("modalPan") as HTMLElement;
 
-    if (modalDialog && modalPan) {
+    if (modalDialog.value && modalPan) {
       const options = {
         supportedGestures: [Pan],
       };
 
-      const pointerListener = new PointerListener(modalPan, options);
+      // const pointerListener = new PointerListener(modalPan, options);
 
       modalPan.addEventListener("pan", function (event: any) {
-        var x = 0;
-        var y = event.detail.global.deltaY;
-        var transformString = "translate3d(" + x + "px, " + y + "px, 0)";
+        const x = 0;
+        const y = event.detail.global.deltaY;
+        const transformString = "translate3d(" + x + "px, " + y + "px, 0)";
 
-        modalDialog.style.transform = transformString;
+        modalDialog.value.style.transform = transformString;
       });
 
-      const intervalId = setInterval(checkModalPosition, 500);
-
-      function checkModalPosition() {
-        // check if controls are still fully visible
-        // if not close play interface
-        var elemRect = modalDialog.getBoundingClientRect();
-        var bodyRect = document.body.getBoundingClientRect();
-        var offset = elemRect.y - bodyRect.height;
-        console.log(offset);
-
-        if (offset >= -200) {
-          clearInterval(intervalId);
-          controlsModal.hide();
-          emit("closed");
-        }
-      }
+      intervalId.value = setInterval(checkModalPosition, 500);
     }
   }
 });
+
+function checkModalPosition() {
+  // check if controls are still fully visible
+  // if not close play interface
+  const elemRect = modalDialog.value.getBoundingClientRect();
+  const bodyRect = document.body.getBoundingClientRect();
+  const offset = elemRect.y - bodyRect.height;
+
+  if (offset >= -200) {
+    clearInterval(intervalId.value);
+    controlsModal.value.hide();
+    emit("closed");
+  }
+}
 </script>

@@ -1,108 +1,110 @@
 <template>
   <!-- CONTAINER FOR STARTUP ELEMENTS -->
-  <div
-    v-show="
-      interfaceState == EInterfaceStates.LOAD_ROM ||
-      interfaceState == EInterfaceStates.START_GAME
-    "
-    class="container start-container"
-  >
-    <div class="d-flex flex-column justify-content-center">
-      <div class="grid-item text-center">
-        <input
-          type="button"
-          class="btn btn-start"
-          @click="handleButtonClicked(EButton.LOAD)"
-          value="Load ROM"
-        />
-        <input
-          id="inputROM"
-          type="file"
-          class="btn btn-start"
-          @change="loadROM"
-          accept=".gbc"
-          hidden
-        />
-      </div>
-
-      <div class="grid-item text-center">
-        <input
-          id="loadedROMButton"
-          type="button"
-          class="btn btn-start"
-          disabled
-          value="No ROM loaded"
-        />
-      </div>
-
-      <div class="grid-item text-center">
-        <input
-          type="button"
-          class="btn btn-start"
-          @click="handleButtonClicked(EButton.CONTINUE)"
-          v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
-          value="Continue"
-        />
-      </div>
-
-      <div class="grid-item text-center">
-        <input
-          type="button"
-          class="btn btn-start"
-          @click="handleButtonClicked(EButton.NEW_GAME)"
-          v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
-          value="New Game"
-        />
-      </div>
-
-      <div class="grid-item text-center">
-        <input
-          type="button"
-          class="btn btn-start"
-          @click="handleButtonClicked(EButton.IMPORT)"
-          v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
-          value="Import"
-        />
-        <input
-          id="inputDB"
-          type="file"
-          class="btn btn-primary"
-          @change="importStuff"
-          accept=".json"
-          hidden
-        />
-      </div>
-
-      <div class="grid-item text-center">
-        <input
-          type="button"
-          class="btn btn-start"
-          @click="handleButtonClicked(EButton.EXPORT)"
-          v-bind:disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
-          value="Export"
-        />
-      </div>
-    </div>
-  </div>
-
-  <!-- CONTAINER FOR GAME ELEMENTS -->
-  <div
-    v-show="interfaceState == EInterfaceStates.PLAY"
-    class="container game-container"
-  >
-    <!-- OUTER FRAME -->
-    <div id="#canvasFrame">
-      <!-- WASMBOY CANVAS -->
-      <canvas id="wasmboyCanvas"></canvas>
-    </div>
-
-    <!-- CONTROLS -->
-    <Controls
-      v-if="interfaceState == EInterfaceStates.PLAY"
-      v-on:closed="handleButtonClicked(EButton.GO_BACK)"
-      v-on:updateControl="updateControlStates"
+  <div>
+    <div
+      v-show="
+        interfaceState == EInterfaceStates.LOAD_ROM ||
+        interfaceState == EInterfaceStates.START_GAME
+      "
+      class="container start-container"
     >
-    </Controls>
+      <div class="d-flex flex-column justify-content-center">
+        <div class="grid-item text-center">
+          <input
+            type="button"
+            class="btn btn-start"
+            @click="handleButtonClicked(EButton.LOAD)"
+            value="Load ROM"
+          />
+          <input
+            id="inputROM"
+            type="file"
+            class="btn btn-start"
+            @change="loadROM"
+            accept=".gbc"
+            hidden
+          />
+        </div>
+
+        <div class="grid-item text-center">
+          <input
+            id="loadedROMButton"
+            type="button"
+            class="btn btn-start"
+            disabled
+            value="No ROM loaded"
+          />
+        </div>
+
+        <div class="grid-item text-center">
+          <input
+            type="button"
+            class="btn btn-start"
+            @click="handleButtonClicked(EButton.CONTINUE)"
+            :disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
+            value="Continue"
+          />
+        </div>
+
+        <div class="grid-item text-center">
+          <input
+            type="button"
+            class="btn btn-start"
+            @click="handleButtonClicked(EButton.NEW_GAME)"
+            :disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
+            value="New Game"
+          />
+        </div>
+
+        <div class="grid-item text-center">
+          <input
+            type="button"
+            class="btn btn-start"
+            @click="handleButtonClicked(EButton.IMPORT)"
+            :disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
+            value="Import"
+          />
+          <input
+            id="inputDB"
+            type="file"
+            class="btn btn-primary"
+            @change="importStuff"
+            accept=".json"
+            hidden
+          />
+        </div>
+
+        <div class="grid-item text-center">
+          <input
+            type="button"
+            class="btn btn-start"
+            @click="handleButtonClicked(EButton.EXPORT)"
+            :disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
+            value="Export"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTAINER FOR GAME ELEMENTS -->
+    <div
+      v-show="interfaceState == EInterfaceStates.PLAY"
+      class="container game-container"
+    >
+      <!-- OUTER FRAME -->
+      <div id="#canvasFrame">
+        <!-- WASMBOY CANVAS -->
+        <canvas id="wasmboyCanvas"></canvas>
+      </div>
+
+      <!-- CONTROLS -->
+      <Controls
+        v-if="interfaceState == EInterfaceStates.PLAY"
+        @closed="handleButtonClicked(EButton.GO_BACK)"
+        @updateControl="updateControlStates"
+      >
+      </Controls>
+    </div>
   </div>
 </template>
 
@@ -184,7 +186,6 @@ initDB();
 
 async function initDB() {
   db = await new Dexie("wasmboy").open();
-  console.log(db);
 }
 
 const controlStates = {
@@ -286,7 +287,7 @@ function importStuff(event: any) {
 }
 
 function download(file: any, fileName: any, contentType: any) {
-  var a = document.createElement("a");
+  const a = document.createElement("a");
   // var file = new Blob([content], {type: contentType});
   a.href = URL.createObjectURL(file);
   a.download = fileName;
