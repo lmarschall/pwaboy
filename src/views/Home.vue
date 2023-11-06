@@ -1,6 +1,6 @@
 <template>
-  <!-- CONTAINER FOR STARTUP ELEMENTS -->
   <div>
+    <!-- CONTAINER FOR STARTUP ELEMENTS -->
     <div
       v-show="
         interfaceState == EInterfaceStates.LOAD_ROM ||
@@ -8,81 +8,144 @@
       "
       class="container start-container"
     >
-      <div class="d-flex flex-column justify-content-center">
-        <div class="grid-item text-center">
-          <input
+      <div id="carouselMenu" class="carousel slide" data-bs-interval="false">
+        <div class="carousel-indicators">
+          <button
             type="button"
-            class="btn btn-start"
-            @click="handleButtonClicked(EButton.LOAD)"
-            value="Load ROM"
-          />
-          <input
-            id="inputROM"
-            type="file"
-            class="btn btn-start"
-            @change="loadROM"
-            accept=".gbc"
-            hidden
-          />
+            data-bs-target="#carouselMenu"
+            data-bs-slide-to="0"
+            class="active"
+            aria-current="true"
+            aria-label="Slide 1"
+          ></button>
+          <button
+            type="button"
+            data-bs-target="#carouselMenu"
+            data-bs-slide-to="1"
+            aria-label="Slide 2"
+          ></button>
         </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="d-flex flex-column justify-content-center">
+              <div
+                class="grid-item text-center d-flex flex-row justify-content-center"
+              >
+                <span class="input-group-text">1</span>
+                <div class="p-2"></div>
+                <input
+                  type="button"
+                  class="btn btn-menu btn-start"
+                  @click="handleButtonClicked(EButton.LOAD)"
+                  value="LOAD ROM"
+                />
+                <input
+                  id="inputROM"
+                  type="file"
+                  class="btn btn-start"
+                  @change="loadROM"
+                  accept=".gbc"
+                  hidden
+                />
+              </div>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="d-flex flex-column justify-content-center">
+              <div class="grid-item text-center">
+                <input
+                  id="loadedROMButton"
+                  type="button"
+                  class="btn btn-start"
+                  disabled
+                  value="NO ROM LOADED"
+                />
+              </div>
 
-        <div class="grid-item text-center">
-          <input
-            id="loadedROMButton"
-            type="button"
-            class="btn btn-start"
-            disabled
-            value="No ROM loaded"
-          />
-        </div>
+              <div
+                class="grid-item text-center d-flex flex-row justify-content-center"
+              >
+                <span class="input-group-text">1</span>
+                <div class="p-2"></div>
+                <input
+                  type="button"
+                  class="btn btn-menu btn-start"
+                  @click="handleButtonClicked(EButton.CONTINUE)"
+                  :disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
+                  value="CONTINUE GAME"
+                />
+              </div>
 
-        <div class="grid-item text-center">
-          <input
-            type="button"
-            class="btn btn-start"
-            @click="handleButtonClicked(EButton.CONTINUE)"
-            :disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
-            value="Continue"
-          />
-        </div>
+              <div
+                class="grid-item text-center d-flex flex-row justify-content-center"
+              >
+                <span class="input-group-text">2</span>
+                <div class="p-2"></div>
+                <input
+                  type="button"
+                  class="btn btn-menu btn-start"
+                  @click="handleButtonClicked(EButton.NEW_GAME)"
+                  :disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
+                  value="NEW GAME"
+                />
+              </div>
 
-        <div class="grid-item text-center">
-          <input
-            type="button"
-            class="btn btn-start"
-            @click="handleButtonClicked(EButton.NEW_GAME)"
-            :disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
-            value="New Game"
-          />
-        </div>
+              <div
+                class="grid-item text-center d-flex flex-row justify-content-center"
+              >
+                <span class="input-group-text">3</span>
+                <div class="p-2"></div>
+                <input
+                  type="button"
+                  class="btn btn-menu btn-start"
+                  @click="handleButtonClicked(EButton.IMPORT)"
+                  :disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
+                  value="IMPORT SAVE"
+                />
+                <input
+                  id="inputDB"
+                  type="file"
+                  class="btn btn-primary"
+                  @change="importStuff"
+                  accept=".json"
+                  hidden
+                />
+              </div>
 
-        <div class="grid-item text-center">
-          <input
-            type="button"
-            class="btn btn-start"
-            @click="handleButtonClicked(EButton.IMPORT)"
-            :disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
-            value="Import"
-          />
-          <input
-            id="inputDB"
-            type="file"
-            class="btn btn-primary"
-            @change="importStuff"
-            accept=".json"
-            hidden
-          />
+              <div
+                class="grid-item text-center d-flex flex-row justify-content-center"
+              >
+                <span class="input-group-text">4</span>
+                <div class="p-2"></div>
+                <input
+                  type="button"
+                  class="btn btn-menu btn-start"
+                  @click="handleButtonClicked(EButton.EXPORT)"
+                  :disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
+                  value="EXPORT SAVE"
+                />
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div class="grid-item text-center">
-          <input
-            type="button"
-            class="btn btn-start"
-            @click="handleButtonClicked(EButton.EXPORT)"
-            :disabled="interfaceState <= EInterfaceStates.LOAD_ROM"
-            value="Export"
-          />
-        </div>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#carouselMenu"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#carouselMenu"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
       </div>
     </div>
 
@@ -126,24 +189,32 @@ div#\#canvasFrame {
   background-color: white;
 }
 
+.carousel {
+  height: 100%;
+}
+
 .btn.btn-start {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   font-size: large;
   background-color: #aaa;
 }
 
+.btn.btn-menu {
+  width: 200px;
+}
+
 .start-container {
   height: 100vh;
   width: 100vw;
   padding-top: 30px;
-  background-color: rgb(91, 91, 218);
+  background-color: rgb(145, 175, 142);
 }
 
 .game-container {
   height: 100vh;
   width: 100vw;
   padding-top: 20px;
-  background-color: rgb(91, 91, 218);
+  background-color: rgb(145, 175, 142);
 }
 
 .d-flex.flex-column.justify-content-center {
@@ -163,6 +234,7 @@ div#\#canvasFrame {
 </style>
 
 <script setup lang="ts">
+import { Carousel } from "bootstrap";
 import { onMounted, onUpdated, ref } from "vue";
 import { WasmBoy } from "wasmboy";
 import { EButton, EControl, EInterfaceStates } from "../defines";
@@ -180,6 +252,7 @@ import Controls from "../components/Controls.vue";
 let db: any;
 
 const interfaceState = ref(EInterfaceStates.LOAD_ROM as EInterfaceStates);
+const carouselMenu = ref(null as Carousel);
 // const romPath = ref(new File([""], "filename") as File);
 
 initDB();
@@ -404,6 +477,13 @@ async function loadROM(event: any) {
       console.log("WasmBoy ROM loaded!");
       loadedROMButton.value = event.target.files[0].name;
       interfaceState.value = EInterfaceStates.START_GAME;
+      const carouselElement = document.getElementById(
+        "carouselMenu"
+      ) as HTMLElement;
+      if (carouselElement) {
+        carouselMenu.value = new Carousel(carouselElement);
+        if (carouselMenu.value) carouselMenu.value.next();
+      }
     })
     .catch(() => {
       console.error("Error loading the ROM");

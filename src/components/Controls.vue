@@ -99,7 +99,7 @@
 }
 
 .btn.btn-none {
-  opacity: 1;
+  visibility: hidden;
 }
 
 .modal-dialog {
